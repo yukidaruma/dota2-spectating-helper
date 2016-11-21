@@ -93,7 +93,7 @@ let vm = new Vue({
     data: { game: {}, map: {}, factions: {} }
 });
 
-let socket = io.connect('localhost:3000');
+let socket = io.connect(window.location.hostname + ':' + window.location.port);
 
 socket.on('connect', () => {
     console.log("connected to server");
