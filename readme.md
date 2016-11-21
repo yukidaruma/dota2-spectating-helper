@@ -1,5 +1,7 @@
 # Installation
 1. ```
+   mkdir dota2-spectating-helper
+   cd dota2-spectating-helper
    git clone https://github.com/yukidaruma/dota2-spectating-helper .
    npm install
    ```
