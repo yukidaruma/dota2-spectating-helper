@@ -1,0 +1,136 @@
+<!doctype html>
+<link rel="stylesheet" href="style.css">
+<meta charset="utf-8"> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.5.1/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
+<script src="https://skyway.io/dist/screenshare.min.js"></script>
+
+<div id="app">
+    <div class="screen">
+        <div class="faction" :class="['radiant', 'dire'][factionIndex]" v-for="(faction, factionIndex) in factions">
+            <h2>{{ getFactionName(factionIndex) }} <span class="team-kills">{{ Object.keys(factions[factionIndex].players).map((playerKey) => factions[factionIndex].players[playerKey].kills).reduce((a, b) => a + b, 0) }}</span></h2>
+            <div class="player" v-for="(player, playerIndex) in faction.players">
+                <div class="player-summary">
+                    <div class="links">
+                        <a :href="'http://dotabuff.com/players/' + steamID64to32(player.steamid)" target="_blank"><img class="favicon" src="/image/dotabuff-favicon.png"></a><br>
+                        <a :href="'http://opendota.com/players/' + steamID64to32(player.steamid)" target="_blank"><img class="favicon" src="/image/opendota-favicon.png"></a>
+                    </div>
+                    <div class="hero-portrait">
+                        <img :class="faction.heroes[playerIndex].respawn_seconds ? 'dead' : ''" :src="`/image/hero/${ faction.heroes[playerIndex].name.replace('npc_dota_hero_', '') }.png`">
+                        <span class="respawn-timer" v-if="faction.heroes[playerIndex].respawn_seconds">{{ faction.heroes[playerIndex].respawn_seconds }}</span>
+                    </div>
+                    <div class="name">
+                        <span class="player-name">{{ player.name }}</span><br>
+                        <span class="level">Level {{ faction.heroes[playerIndex].level }}</span>
+                    </div>
+                </div>
+                 
+                <div class="items">
+                    <div class="item" :class="itemIndex < 6 ? 'inventory' : 'stash'" v-for="(item, itemIndex) in faction.items[playerIndex]">
+                        <img :title="item.name" :class="item.name === 'empty' ? 'empty' : ''"
+                            :src="item.name === 'empty' ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+                                : `/image/item/${ /^item_recipe_/.test(item.name) ? 'recipe' : item.name.replace('item_', '') }.png`">
+                    </div>
+                </div>
+
+                <dl class="scores">
+                    <dt>K/D/A</dt><dd>{{ player.kills }}/{{ player.deaths }}/{{ player.assists }}</dd>
+                    <dt>LH/DN</dt><dd>{{ player.last_hits }}/{{ player.denies }}</dd>
+                    <dt>NW</dt><dd>{{ player.net_worth }}</dd>
+                    <dt>GPM</dt><dd>{{ player.gpm }}</dd>
+                    <dt>XPM</dt><dd>{{ player.xpm }}</dd>
+                    <dt>HD</dt><dd>{{ player.hero_damage }}</dd>
+                    <dt>Buyback</dt>
+                    <dd class="buyback-status">
+                        <span v-if="map.game_time > faction.heroes[playerIndex].buyback_cooldown && goldLeftAfterBuyback(faction.heroes[playerIndex].level, faction.heroes[playerIndex].buyback_cost, player.gold_reliable, player.gold_unreliable) >= 0">
+                            <span class="yes">Yes</span>
+                        </span>
+                        <span v-else><span class="no">No</span> (
+                            <span v-if="map.game_time < faction.heroes[playerIndex].buyback_cooldown">{{ formatTime(faction.heroes[playerIndex].buyback_cooldown - map.game_time) }}</span>
+                            <span v-if="goldLeftAfterBuyback(faction.heroes[playerIndex].level, faction.heroes[playerIndex].buyback_cost, player.gold_reliable, player.gold_unreliable) < 0">
+                                {{ -goldLeftAfterBuyback(faction.heroes[playerIndex].level, faction.heroes[playerIndex].buyback_cost, player.gold_reliable, player.gold_unreliable) }}
+                            </span>
+                        )
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        
+        <video id="video" autoplay></video>
+    </div>
+
+    <div class="match">
+        <p>Match ID:
+            {{ map.matchid }}
+            <a :href="'http://dotabuff.com/matches/' + map.matchid" target="_blank"><img class="favicon" src="/image/dotabuff-favicon.png"></a>
+            <a :href="'http://opendota.com/matches/' + map.matchid" target="_blank"><img class="favicon" src="/image/opendota-favicon.png"></a>
+        </p>
+        <button id="select-video-source">Select video source</button>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+const VIDEO_SOURCE_WIDTH = 1366;
+const VIDEO_SOURCE_HEIGHT = 768;
+const VIDEO_SOURCE_FRAMERATE = 60;
+
+ // this function uses inaccurate way to handle 64 bit integer
+let steamID64to32 = (steamID64) => steamID64.substr(3) - 61197960265728;
+let formatTime = (secondsPast) => secondsPast ? `${ (secondsPast / 60 | 0) }:${ ('0' + secondsPast % 60).slice(-2) }` : '-'; 
+let toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())
+let goldLeftAfterBuyback = (level, buybackCost, reliableGold, unreliableGold) =>
+    reliableGold + Math.max(0, unreliableGold - level * 30) - buybackCost;
+let getFactionName = (factionIndex) => {
+    let factionName = ['radiant', 'dire'][factionIndex];
+    return vm.game[`${factionName}_team`] && vm.game[`${factionName}_team`].team_name ? vm.game[`${factionName}_team`].team_name : toTitleCase(factionName);
+};
+
+let vm = new Vue({
+    el: '#app',
+    data: { game: {}, map: {}, factions: {} }
+});
+
+let socket = io.connect('localhost:3000');
+
+socket.on('connect', () => {
+    console.log("connected to server");
+});
+socket.on('newdata', (newdata) => {
+    if (newdata.map) {
+        vm.map = newdata.map;
+        vm.factions = [
+            {
+                heroes: newdata.hero.team2,
+                players: newdata.player.team2,
+                items: newdata.items.team2
+            },
+            {
+                heroes: newdata.hero.team3,
+                players: newdata.player.team3,
+                items: newdata.items.team3
+            }
+        ];
+    }
+});
+
+let screenShare = new SkyWay.ScreenShare({ debug: true });
+document.querySelector('#select-video-source').addEventListener('click', () => {
+	if (screenShare.isEnabledExtension()) {
+        screenShare.startScreenShare({
+                Width: VIDEO_SOURCE_WIDTH,
+                Height: VIDEO_SOURCE_HEIGHT,
+                FrameRate: VIDEO_SOURCE_FRAMERATE
+            },
+            (stream) => document.querySelector('#video').setAttribute('src', URL.createObjectURL(stream)),
+            (error) => console.log(error),
+            () => 0 // on end
+        );
+	}
+    else {
+        alert('You have to install extension first.');
+	}
+});
+</script>
