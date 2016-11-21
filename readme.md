@@ -5,6 +5,7 @@
     1. Enable Developer Mode at chrome://extensions
     2. Modify `manifest.json`.
         Example for Chrome:
+        
         ```json
         {
             "name": "Dota 2 Spectating Helper screenshare enabler",
@@ -20,14 +21,14 @@
             "permissions": [
                 "desktopCapture",
                 "tabs",
-                "http://localhost:3000/*" // in case of inline installation, you have to set your webapp's origin here.
+                "http://localhost:3000/*"
             ],
             "background": {
                 "scripts": ["background.js"],
                 "persistent": false
             },
             "content_scripts": [{
-                "matches": ["http://localhost:3000/*"], // change origin name as your own.
+                "matches": ["http://localhost:3000/*"],
                 "js": ["content.js"],
                 "all_frames": true,
                 "run_at": "document_end"
