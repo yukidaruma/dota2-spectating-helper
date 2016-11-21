@@ -1,5 +1,5 @@
 # Install
-1. run `npm install git+https://github.com/yukidaruma/dota2-spectating-helper.git`.
+1. run `npm install https://github.com/yukidaruma/dota2-spectating-helper`.
 2. Install [SkyWay Screenshare](https://github.com/nttcom/SkyWay-ScreenShare) browser extension on your browser.
     **Installation for Chrome**
     1. Enable Developer Mode at chrome://extensions
