@@ -1,5 +1,8 @@
-# Install
-1. Run `npm install https://github.com/yukidaruma/dota2-spectating-helper`.
+# Installation
+1. ```
+   git clone https://github.com/yukidaruma/dota2-spectating-helper
+   npm install ./dota2-spectating-helper
+   ```
 2. Add `gamestate_integration_*.cfg` file to `teamapps\common\dota 2 beta\game\dota\cfg\gamestate_integration\`.
     [Example](https://github.com/xzion/dota2-gsi/blob/master/gamestate_integration_dota2-gsi.cfg):
     
