@@ -21,5 +21,6 @@
     "type" : "git",
     "url" : "http://github.com/yukidaruma/dota2-spectating-helper.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }
