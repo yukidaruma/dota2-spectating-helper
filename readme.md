@@ -85,4 +85,4 @@ https://gfycat.com/TepidSnappyIndianspinyloach
 MIT
 
 # Third-party license
-dota2-gsi-fork is fork of https://github.com/xzion/dota2-gsi, which is released under MIT License.
+dota2-gsi-fork is a fork of https://github.com/xzion/dota2-gsi, which is released under MIT License.
