@@ -41,15 +41,15 @@
 
 # Usage
 1. run `npm start`.
-2. Open [http://localhost:3000].
+2. Open http://localhost:3000.
 
 Only works for spectator, replay, or broadcaster modes.
 
 # Demo
-[https://gfycat.com/TepidSnappyIndianspinyloach]
+https://gfycat.com/TepidSnappyIndianspinyloach
 
 # License
 MIT
 
 # Third-party license
-dota2-gsi-fork is fork of [https://github.com/xzion/dota2-gsi], which is released under MIT License.
+dota2-gsi-fork is fork of https://github.com/xzion/dota2-gsi, which is released under MIT License.
