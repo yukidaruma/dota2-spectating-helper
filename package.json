@@ -1,10 +1,9 @@
 {
   "name": "dota2-spectating-helper",
   "version": "1.0.0",
-  "bundledDependencies": [
-    "dota2-gsi-fork"
-  ],
   "dependencies": {
+    "body-parser": "1.x.x",
+    "events": "1.x.x",
     "express": "4.x.x",
     "node-fetch": "1.x.x",
     "request": "2.x.x",
