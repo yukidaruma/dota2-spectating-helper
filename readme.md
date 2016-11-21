@@ -1,6 +1,32 @@
 # Install
-1. run `npm install https://github.com/yukidaruma/dota2-spectating-helper`.
-2. Install [SkyWay Screenshare](https://github.com/nttcom/SkyWay-ScreenShare) browser extension on your browser.
+1. Run `npm install https://github.com/yukidaruma/dota2-spectating-helper`.
+2. Add `gamestate_integration_*.cfg` file to `teamapps\common\dota 2 beta\game\dota\cfg\gamestate_integration\`.
+    [Example](https://github.com/xzion/dota2-gsi/blob/master/gamestate_integration_dota2-gsi.cfg):
+    
+    ```
+    "dota2-gsi Configuration"
+    {
+        "uri"               "http://localhost:3000/"
+        "timeout"           "5.0"
+        "buffer"            "0.1"
+        "throttle"          "0.1"
+        "heartbeat"         "30.0"
+        "data"
+        {
+            "provider"      "1"
+            "map"           "1"
+            "player"        "1"
+            "hero"          "1"
+            "abilities"     "1"
+            "items"         "1"
+        }
+        "auth"
+        {
+            "token"         "hello1234"
+        }
+    }
+    ```
+3. Install [SkyWay Screenshare](https://github.com/nttcom/SkyWay-ScreenShare) browser extension on your browser.
     **Installation for Chrome**
     1. Enable Developer Mode at chrome://extensions
     2. Modify `manifest.json`.
@@ -36,11 +62,11 @@
         }
         ```
     3. Drag and drop extension folder into chrome://extensions screen.
-3. Enable "Play Sound in Desktop" and change to Borderless Window in Dota 2 settings.
-4. Adjust `VIDEO_SOURCE_WIDTH`, `VIDEO_SOURCE_HEIGHT`, `VIDEO_SOURCE_FRAMERATE` in `static/index.html` depending on your video settings. (default 1366x768@60fps)
+4. Enable "Play Sound in Desktop" and change to Borderless Window in Dota 2 settings.
+5. Adjust `VIDEO_SOURCE_WIDTH`, `VIDEO_SOURCE_HEIGHT`, `VIDEO_SOURCE_FRAMERATE` in `static/index.html` depending on your video settings. (default 1366x768@60fps)
 
 # Usage
-1. run `npm start`.
+1. Run `npm start`.
 2. Open http://localhost:3000.
 
 Only works for spectator, replay, or broadcaster modes.
