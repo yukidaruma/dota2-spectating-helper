@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "dota2-gsi-fork",
   "version": "1.0.1",
   "dependencies": {
